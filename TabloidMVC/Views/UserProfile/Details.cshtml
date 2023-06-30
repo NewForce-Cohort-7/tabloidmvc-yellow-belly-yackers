@@ -1,0 +1,38 @@
+﻿@model TabloidMVC.Models.UserProfile
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container">
+    <h1 class="mb-4">@Model.UserType.Name</h1>
+    <div class="row">
+        <div class="col-md-3">
+            @if (Model.ImageLocation == null)
+            {
+                <img class="img-fluid rounded-circle" src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg" alt="User Profile Image" />
+            }
+            else
+            {
+                <img class="img-fluid rounded-circle" src="@Model.ImageLocation" alt="User Profile Image" />
+            }
+        </div>
+        <div class="col-md-9">
+            <div>
+                <h3 class="font-weight-bold">@Model.FullName</h3>              
+            </div>
+            <div>
+                <label class="font-weight-bold">Email:</label>
+                <span>@Model.Email</span>
+            </div>
+            <div>
+                <label class="font-weight-bold">Created On:</label>
+                <span>@Model.CreateDateTime</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
