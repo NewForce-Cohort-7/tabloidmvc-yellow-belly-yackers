@@ -84,6 +84,34 @@ namespace TabloidMVC.Controllers
         }
 
         [Authorize]
+        public ActionResult Edit(int id)
+        {
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Edit(Post updatedPost)
+        {
+            if (ModelState.IsValid)
+            {
+               
+                _postRepository.Update(updatedPost);
+
+                return RedirectToAction("Index"); 
+            }
+
+            return View(updatedPost);
+        }
+
+        [Authorize]
         public ActionResult Delete(int id)
         {
             Post post = _postRepository.GetPublishedPostById(id);
