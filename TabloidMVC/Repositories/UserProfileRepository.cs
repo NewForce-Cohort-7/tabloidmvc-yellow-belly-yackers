@@ -157,16 +157,13 @@ namespace TabloidMVC.Repositories
                         INSERT INTO [UserProfile] (
 	                    [FirstName], [LastName], [DisplayName], [Email], [CreateDateTime], [ImageLocation], [UserTypeId])
                         OUTPUT INSERTED.ID
-                        VALUES ('@firstname', '@lastname', '@displayname', '@email', SYSDATETIME(), NULL, 2);
+                        VALUES (@firstname, @lastname, @displayname, @email, SYSDATETIME(), NULL, 2);
                 ";
 
                     cmd.Parameters.AddWithValue("@firstname", userProfile.FirstName);
                     cmd.Parameters.AddWithValue("@lastname", userProfile.LastName);
                     cmd.Parameters.AddWithValue("@displayname", userProfile.DisplayName);
                     cmd.Parameters.AddWithValue("@email", userProfile.Email);
-                    cmd.Parameters.AddWithValue("SYSDATETIME()", userProfile.CreateDateTime);
-                    cmd.Parameters.AddWithValue("NULL", userProfile.ImageLocation);
-                    cmd.Parameters.AddWithValue("2", userProfile.UserTypeId);
 
                     int id = (int)cmd.ExecuteScalar();
 

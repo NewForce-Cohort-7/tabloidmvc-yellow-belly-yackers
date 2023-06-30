@@ -52,7 +52,7 @@ namespace TabloidMVC.Controllers
             {
                 _userProfileRepo.RegisterUser(userProfile);
 
-                return RedirectToAction("Index");
+                return Redirect("/");
             }
             catch (Exception ex)
             {
