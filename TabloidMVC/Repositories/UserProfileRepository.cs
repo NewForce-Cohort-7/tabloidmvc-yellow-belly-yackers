@@ -146,5 +146,21 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+        public void RegisterUser(UserProfile userProfile)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        INSERT INTO [UserProfile] (
+	                    [Id], [FirstName], [LastName], [DisplayName], [Email], [CreateDateTime], [ImageLocation], [UserTypeId])
+                        OUTPUT INSERTED.ID
+                        VALUES ('@firstname', '@lastname', '@displayname', '@email', SYSDATETIME(), NULL, 2);
+                ";
+                }
+            }
+        }
     }
 }
