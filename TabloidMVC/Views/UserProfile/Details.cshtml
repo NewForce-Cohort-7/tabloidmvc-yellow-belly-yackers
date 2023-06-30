@@ -1,0 +1,30 @@
+﻿@model TabloidMVC.Models.UserProfile
+
+@{
+    ViewData["Title"] = $"";
+}
+
+<h1>Details</h1>
+
+<div class="container">
+    <h1 class="mb-4">Walker Profile</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <img class="img-fluid rounded-circle" src="@Model.ImageLocation" alt="Walker Image" />
+        </div>
+        <div class="col-md-9">
+            <div>
+                <label class="font-weight-bold">Name:</label>
+                <span>@Model.Walker.Name</span>
+            </div>
+            <div>
+                <label class="font-weight-bold">Neighborhood:</label>
+                <span>@Model.Walker.Neighborhood.Name</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
