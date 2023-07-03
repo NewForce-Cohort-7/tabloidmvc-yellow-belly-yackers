@@ -31,7 +31,6 @@ namespace TabloidMVC.Controllers
         }
 
 
-
         // GET: CommentController/Details/5
         public ActionResult Details(int id)
         {
@@ -63,23 +62,39 @@ namespace TabloidMVC.Controllers
         // GET: CommentController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var comment = _commentsRepository.GetById(id);
+            return View(comment);
         }
 
         // POST: CommentController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [Authorize] // Ensure the user is logged in
+        public ActionResult Delete(int id, Comment comment)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                Comment commentToDelete = _commentsRepository.GetById(id); // Fetch the comment from the database
+
+                var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Get the current logged in user's id
+
+                if (commentToDelete.UserProfileId != currentUserId)
+                {
+                    // If the current user is not the author of the comment, return Unauthorized
+                    return Unauthorized();
+                }
+
+                _commentsRepository.Delete(id);
+
+                // Redirects the user back to the post
+                return RedirectToAction("ForPost", "Comment", new { postId = commentToDelete.PostId });
             }
             catch
             {
-                return View();
+                return View(comment);
             }
         }
+
 
         // For Post Details Page
         // This is so we can access the comments for a specific post
