@@ -2,7 +2,7 @@
 {
     public class Subscription
     {
-
+        SubscriberUserProfileId
 
 
     }
