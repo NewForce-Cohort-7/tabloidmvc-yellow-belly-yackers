@@ -288,11 +288,36 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
-        public void AddPostTag(PostTag postTag)
+        public void DeletePostTagsOnPost(int id)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        DELETE FROM PostTag
+                        WHERE PostTag.PostId = @id
+                    ";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void AddPostTag(PostTag postTag)
+        {
+            // check if there are no tag IDs or an empty collection of tag IDs in the provided post tag.
+            if (postTag.TagIds == null || postTag.TagIds.Count == 0)
+            {
+                // If there are no IDs, return without performing any further actions
+                return; 
+            }
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                // iterateover each tag ID in the postTag.TagIds collection
                 foreach (var tag in postTag.TagIds)
                 {
 
@@ -303,7 +328,7 @@ namespace TabloidMVC.Repositories
                        OUTPUT INSERTED.Id
                        VALUES (@tagId, @postId)
                         ";
-
+                        // set paramter values for the tag and post ID
                         cmd.Parameters.AddWithValue("@postId", postTag.PostId);
                         cmd.Parameters.AddWithValue("@tagId", tag);
 
