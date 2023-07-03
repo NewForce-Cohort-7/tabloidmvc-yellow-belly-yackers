@@ -195,5 +195,35 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+
+        // This updates an existing comment in the database by its Id
+        public void Edit(Comment comment)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+            UPDATE Comment 
+            SET 
+                PostId = @PostId,
+                UserProfileId = @UserProfileId,
+                Subject = @Subject,
+                Content = @Content,
+                CreateDateTime = @CreateDateTime
+            WHERE Id = @Id";
+
+                    cmd.Parameters.AddWithValue("@Id", comment.Id);
+                    cmd.Parameters.AddWithValue("@PostId", comment.PostId);
+                    cmd.Parameters.AddWithValue("@UserProfileId", comment.UserProfileId);
+                    cmd.Parameters.AddWithValue("@Subject", comment.Subject);
+                    cmd.Parameters.AddWithValue("@Content", comment.Content);
+                    cmd.Parameters.AddWithValue("@CreateDateTime", comment.CreateDateTime);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

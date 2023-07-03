@@ -30,32 +30,65 @@ namespace TabloidMVC.Controllers
             return View(viewModel);
         }
 
-
-        // GET: CommentController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-
         // GET: CommentController/Edit/5
+        [Authorize]
         public ActionResult Edit(int id)
         {
-            return View();
+            Comment comment = _commentsRepository.GetById(id);
+
+            // Checks if the comment exists
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            // Checks if the current user is the author of the comment
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (comment.UserProfileId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            return View(comment);
         }
 
         // POST: CommentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [Authorize]
+        public ActionResult Edit(int id, Comment updatedComment)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                Comment existingComment = _commentsRepository.GetById(id);
+
+                // Checks if the comment exists
+                if (existingComment == null)
+                {
+                    return NotFound();
+                }
+
+                // Check if the current user is the author of the comment
+                var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (existingComment.UserProfileId != currentUserId)
+                {
+                    return Unauthorized();
+                }
+
+                // Updates the comment's fields
+                existingComment.Subject = updatedComment.Subject;
+                existingComment.Content = updatedComment.Content;
+
+                // Saves the changes to the database
+                _commentsRepository.Edit(existingComment);
+
+                // Redirects to the "ForPost" action with the appropriate postId
+                return RedirectToAction("ForPost", new { postId = existingComment.PostId });
             }
             catch
             {
-                return View();
+                // If something goes wrong, redirect back to the form
+                return View(updatedComment);
             }
         }
 
