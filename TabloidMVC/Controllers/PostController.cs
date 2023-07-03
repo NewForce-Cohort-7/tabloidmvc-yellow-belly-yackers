@@ -84,6 +84,50 @@ namespace TabloidMVC.Controllers
         }
 
         [Authorize]
+        public ActionResult Edit(int id)
+        {
+            int userId = GetCurrentUserProfileId();
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            if (post == null)
+            {
+                post = _postRepository.GetUserPostById(id, userId);
+                if (post == null)
+                {
+                    return NotFound();
+                }
+            }
+            if (!User.IsInRole("Admin") && post.UserProfileId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            {
+                return NotFound();
+            }
+
+            var vm = new PostEditViewModel();
+            vm.CategoryOptions = _categoryRepository.GetAll();
+            vm.Post = post;
+            return View(vm);
+
+        }
+
+
+
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Edit(int id, PostEditViewModel vm)
+        {
+            try
+            {
+                _postRepository.Update(vm.Post);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(vm.Post);
+            }
+        }
+
+        [Authorize]
         public ActionResult Delete(int id)
         {
             Post post = _postRepository.GetPublishedPostById(id);
