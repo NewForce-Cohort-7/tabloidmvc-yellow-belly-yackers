@@ -57,6 +57,7 @@ namespace TabloidMVC.Repositories
             }
         }
 
+
         public void Delete(int id)
         {
             using (SqlConnection conn = Connection)
@@ -118,7 +119,6 @@ namespace TabloidMVC.Repositories
                 Name = reader.GetString(reader.GetOrdinal("Name")),
             };
         }
-
 
 
 

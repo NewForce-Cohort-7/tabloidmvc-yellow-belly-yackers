@@ -238,5 +238,56 @@ namespace TabloidMVC.Repositories
                 }
             };
         }
+
+        public void Delete(Post post)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                        cmd.CommandText = @"
+                                DELETE FROM Post
+                                WHERE Id = @id
+                        ";
+                        cmd.Parameters.AddWithValue("@id", post.Id);
+
+                        cmd.ExecuteNonQuery();                  
+                }
+            }
+        }
+        public void Update(Post post)
+        {
+            using (SqlConnection connection = Connection)
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        UPDATE Post
+                        SET 
+                        [Title] = @title,
+                         [Content] = @content,
+                         [ImageLocation] = @imagelocation,
+                         [CreateDateTime] = @createdatetime,
+                         [PublishDateTime] = @publishdatetime,
+                         [CategoryId] = @categoryid
+                        WHERE Id = @id
+                        ";
+                    cmd.Parameters.AddWithValue("@id", post.Id);
+                    cmd.Parameters.AddWithValue("@title", post.Title);
+                    cmd.Parameters.AddWithValue("@content", post.Content);
+                    cmd.Parameters.AddWithValue("@imagelocation", post.ImageLocation);
+                    cmd.Parameters.AddWithValue("@createdatetime", post.CreateDateTime);
+                    cmd.Parameters.AddWithValue("@publishdatetime", post.PublishDateTime);
+                    cmd.Parameters.AddWithValue("@isapproved", post.IsApproved);
+                    cmd.Parameters.AddWithValue("@categoryid", post.CategoryId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }

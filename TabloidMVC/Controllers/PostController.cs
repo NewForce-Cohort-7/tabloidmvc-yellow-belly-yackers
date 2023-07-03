@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System.Security.Claims;
+using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
 
@@ -80,6 +81,81 @@ namespace TabloidMVC.Controllers
         {
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return int.Parse(id);
+        }
+
+        [Authorize]
+        public ActionResult Edit(int id)
+        {
+            int userId = GetCurrentUserProfileId();
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            if (post == null)
+            {
+                post = _postRepository.GetUserPostById(id, userId);
+                if (post == null)
+                {
+                    return NotFound();
+                }
+            }
+            if (!User.IsInRole("Admin") && post.UserProfileId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            {
+                return NotFound();
+            }
+
+            var vm = new PostEditViewModel();
+            vm.CategoryOptions = _categoryRepository.GetAll();
+            vm.Post = post;
+            return View(vm);
+
+        }
+
+
+
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Edit(int id, PostEditViewModel vm)
+        {
+            try
+            {
+                _postRepository.Update(vm.Post);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(vm.Post);
+            }
+        }
+
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            Post post = _postRepository.GetPublishedPostById(id);
+
+            if (post == null || (post.UserProfileId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) && !User.IsInRole("Admin")))
+            {
+                return NotFound();
+            }
+
+            return View(post);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, Post post)
+        {
+            try
+            {
+                _postRepository.Delete(post);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View(post);
+            }
+
         }
     }
 }
