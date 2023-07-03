@@ -2,8 +2,12 @@
 {
     public class Subscription
     {
-        SubscriberUserProfileId
-
-
+        public int Id { get; set; }
+        public int SubscriberUserProfileId { get; set; }
+        public int ProviderUserProfileId { get; set; }
+        public DateTime BeginDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
+        public UserProfile Provider { get; set; }
+        public int PostId { get; set; }
     }
 }
