@@ -86,29 +86,45 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Edit(int id)
         {
+            int userId = GetCurrentUserProfileId();
             Post post = _postRepository.GetPublishedPostById(id);
 
             if (post == null)
             {
+                post = _postRepository.GetUserPostById(id, userId);
+                if (post == null)
+                {
+                    return NotFound();
+                }
+            }
+            if (!User.IsInRole("Admin") && post.UserProfileId != int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            {
                 return NotFound();
             }
 
-            return View(post);
+            var vm = new PostEditViewModel();
+            vm.CategoryOptions = _categoryRepository.GetAll();
+            vm.Post = post;
+            return View(vm);
+
         }
+
+
+
 
         [Authorize]
         [HttpPost]
-        public ActionResult Edit(Post updatedPost)
+        public ActionResult Edit(int id, PostEditViewModel vm)
         {
-            if (ModelState.IsValid)
+            try
             {
-               
-                _postRepository.Update(updatedPost);
-
-                return RedirectToAction("Index"); 
+                _postRepository.Update(vm.Post);
+                return RedirectToAction("Index");
             }
-
-            return View(updatedPost);
+            catch
+            {
+                return View(vm.Post);
+            }
         }
 
         [Authorize]
