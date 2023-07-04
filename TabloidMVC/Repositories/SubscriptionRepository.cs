@@ -101,6 +101,35 @@ namespace TabloidMVC.Repositories
         }
 
 
+        public List<Subscription> GetAllSubscribersSubs(int subscriberId)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT Id, SubscriberUserProfileId, ProviderUserProfileId, BeginDateTime, EndDateTime FROM Subscription
+                        WHERE SubscriberUserProfileId = @subscriberId";
+
+                    cmd.Parameters.AddWithValue("@subscriberId", subscriberId);
+                    var reader = cmd.ExecuteReader();
+
+                    var subs = new List<Subscription>();
+
+                    while (reader.Read())
+                    {
+                        subs.Add(NewSubFromReader(reader));
+                    }
+
+                    reader.Close();
+
+                    return subs;
+                }
+            }
+        }
+
+
 
 
 
