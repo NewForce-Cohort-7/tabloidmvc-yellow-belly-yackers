@@ -55,7 +55,7 @@ namespace TabloidMVC.Controllers
                 return RedirectToAction("AlreadySubbed", "Subscription", new { postId = postId, alreadySubbedId = AlreadySubbedID });
             }
        
-            //if not, display create confirm page
+            //if not, display CREATE view
             return View(subscription);
         }
 
@@ -78,23 +78,56 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: SubscriptionController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int postId, int providerId)
         {
-            return View();
+
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            int? AlreadySubbedID = _subscriptionRepo.AlreadySubbedId(currentUserId, providerId);
+
+            //if valid subscription doesn't exist, return Already Unsubbed view
+            if (AlreadySubbedID == null)
+            {
+                return RedirectToAction("AlreadyUnsubbed", "Subscription", new { postId = postId, providerId = providerId });
+            }
+
+            //Otherwise,
+            else
+            {
+                //have to make nullable int non-nullable? tbh I don't fully understand thisbut it works
+                int notNullSubID = AlreadySubbedID.Value;
+
+                Subscription existingSub = _subscriptionRepo.GetById(notNullSubID);
+
+                //need to replace post they used to subscribe, with the post they clicked to unsubscribe
+                existingSub.PostId = postId;
+
+                //need to add provider to use name on confirmation page
+                existingSub.Provider = _userRepo.GetProfileById(providerId);
+
+                //if does, display EDIT confirm page
+                return View(existingSub);
+
+            }
+            
+
         }
 
         // POST: SubscriptionController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Subscription subscription)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _subscriptionRepo.Unsubscribe(subscription);
+
+                //redirect back to home if successfully UNsubscribed
+                return RedirectToAction("Index", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(subscription);
             }
         }
 
@@ -128,6 +161,17 @@ namespace TabloidMVC.Controllers
 
             return View(existingSub);
         }
+
+        // GET: SubscriptionController/AlreadyUnsubbed
+        public ActionResult AlreadyUnsubbed(int postId, int providerId)
+        {
+            Subscription subscriptionForView = new Subscription();
+            subscriptionForView.Provider = _userRepo.GetProfileById(providerId);
+            subscriptionForView.PostId = postId;
+
+            return View(subscriptionForView);
+        }
+
 
     }
 }

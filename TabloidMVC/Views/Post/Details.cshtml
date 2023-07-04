@@ -25,9 +25,16 @@
                 <a asp-controller="Comment" asp-action="ForPost" asp-route-postId="@Model.Id" class="btn btn-outline-primary mx-1" title="View Comments">
                     <i class="fas fa-comments"></i>
                 </a>
+
                 <a asp-controller="Subscription" asp-action="Create" asp-route-postId="@Model.Id" asp-route-providerId="@Model.UserProfileId" class="btn btn-outline-primary mx-1" title="Subscribe">
                     <i class="fas fa-plus-square"></i>
                 </a>
+
+                <a asp-controller="Subscription" asp-action="Edit" asp-route-postId="@Model.Id" asp-route-providerId="@Model.UserProfileId" class="btn btn-outline-primary mx-1" title="Unsubscribe">
+                    <i class="material-icons" style="font-size:20px">cancel</i>
+                </a>
+
+
             </div>
         </section>
         <hr />
