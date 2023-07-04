@@ -16,7 +16,6 @@ namespace TabloidMVC.Controllers
         {
             _subscriptionRepo = subscriptionRepository;
             _userRepo = userRepo;
-
         }
 
         // GET: SubscriptionController
@@ -32,6 +31,8 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: SubscriptionController/Create
+        //need the postId so we can have a "return to Post" button in subscription views
+        //need the providerId so we can have provider's name in subscription views
         public ActionResult Create(int postId, int providerId)
         {
             var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -46,7 +47,7 @@ namespace TabloidMVC.Controllers
                 PostId = postId   
             };
 
-            int? AlreadySubbedID = _subscriptionRepo.AlreadySubbedId(subscription.SubscriberUserProfileId, subscription.ProviderUserProfileId);
+            int? AlreadySubbedID = _subscriptionRepo.AlreadySubbedId(currentUserId, providerId);
 
             //check if sub already exists
             if (AlreadySubbedID != null)
@@ -94,12 +95,12 @@ namespace TabloidMVC.Controllers
             //Otherwise,
             else
             {
-                //have to make nullable int non-nullable? tbh I don't fully understand thisbut it works
+                //have to make nullable int non-nullable? tbh I don't fully understand this but it works
                 int notNullSubID = AlreadySubbedID.Value;
 
                 Subscription existingSub = _subscriptionRepo.GetById(notNullSubID);
 
-                //need to replace post they used to subscribe, with the post they clicked to unsubscribe
+                //need to replace post they used to subscribe, with the post they've clicked to unsubscribe
                 existingSub.PostId = postId;
 
                 //need to add provider to use name on confirmation page
