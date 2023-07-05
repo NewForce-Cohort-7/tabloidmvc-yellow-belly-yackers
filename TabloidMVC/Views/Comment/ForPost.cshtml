@@ -1,0 +1,53 @@
+﻿@model TabloidMVC.Models.ViewModels.PostCommentsViewModel
+
+@{
+    ViewData["Title"] = "ForPost";
+}
+
+<h1>Comments</h1>
+
+<p>
+    <a asp-action="Create" asp-route-postId="@Model.PostId">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                User
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                Content
+            </th>
+            <th>
+                Create Date
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var comment in Model.Comments)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.UserProfile.DisplayName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.Subject)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.CreateDateTime)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = comment.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = comment.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
