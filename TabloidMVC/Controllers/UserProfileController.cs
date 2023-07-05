@@ -105,7 +105,7 @@ namespace TabloidMVC.Controllers
         {
             try
             {
-                _userProfileRepo.ReactivateUser(userProfile);
+                _userProfileRepo.DeactivateUser(userProfile);
 
                 return RedirectToAction("Index");
             }
