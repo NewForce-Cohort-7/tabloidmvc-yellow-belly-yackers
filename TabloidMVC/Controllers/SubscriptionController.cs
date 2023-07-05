@@ -16,7 +16,6 @@ namespace TabloidMVC.Controllers
         {
             _subscriptionRepo = subscriptionRepository;
             _userRepo = userRepo;
-
         }
 
         // GET: SubscriptionController
@@ -32,6 +31,8 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: SubscriptionController/Create
+        //need the postId so we can have a "return to Post" button in subscription views
+        //need the providerId so we can have provider's name in subscription views
         public ActionResult Create(int postId, int providerId)
         {
             var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -46,7 +47,7 @@ namespace TabloidMVC.Controllers
                 PostId = postId   
             };
 
-            int? AlreadySubbedID = _subscriptionRepo.AlreadySubbedId(subscription.SubscriberUserProfileId, subscription.ProviderUserProfileId);
+            int? AlreadySubbedID = _subscriptionRepo.AlreadySubbedId(currentUserId, providerId);
 
             //check if sub already exists
             if (AlreadySubbedID != null)
@@ -55,7 +56,7 @@ namespace TabloidMVC.Controllers
                 return RedirectToAction("AlreadySubbed", "Subscription", new { postId = postId, alreadySubbedId = AlreadySubbedID });
             }
        
-            //if not, display create confirm page
+            //if not, display CREATE view
             return View(subscription);
         }
 
@@ -78,23 +79,56 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: SubscriptionController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int postId, int providerId)
         {
-            return View();
+
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            int? AlreadySubbedID = _subscriptionRepo.AlreadySubbedId(currentUserId, providerId);
+
+            //if valid subscription doesn't exist, return Already Unsubbed view
+            if (AlreadySubbedID == null)
+            {
+                return RedirectToAction("AlreadyUnsubbed", "Subscription", new { postId = postId, providerId = providerId });
+            }
+
+            //Otherwise,
+            else
+            {
+                //have to make nullable int non-nullable? tbh I don't fully understand this but it works
+                int notNullSubID = AlreadySubbedID.Value;
+
+                Subscription existingSub = _subscriptionRepo.GetById(notNullSubID);
+
+                //need to replace post they used to subscribe, with the post they've clicked to unsubscribe
+                existingSub.PostId = postId;
+
+                //need to add provider to use name on confirmation page
+                existingSub.Provider = _userRepo.GetProfileById(providerId);
+
+                //if does, display EDIT confirm page
+                return View(existingSub);
+
+            }
+            
+
         }
 
         // POST: SubscriptionController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Subscription subscription)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _subscriptionRepo.Unsubscribe(subscription);
+
+                //redirect back to home if successfully UNsubscribed
+                return RedirectToAction("Index", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(subscription);
             }
         }
 
@@ -128,6 +162,17 @@ namespace TabloidMVC.Controllers
 
             return View(existingSub);
         }
+
+        // GET: SubscriptionController/AlreadyUnsubbed
+        public ActionResult AlreadyUnsubbed(int postId, int providerId)
+        {
+            Subscription subscriptionForView = new Subscription();
+            subscriptionForView.Provider = _userRepo.GetProfileById(providerId);
+            subscriptionForView.PostId = postId;
+
+            return View(subscriptionForView);
+        }
+
 
     }
 }

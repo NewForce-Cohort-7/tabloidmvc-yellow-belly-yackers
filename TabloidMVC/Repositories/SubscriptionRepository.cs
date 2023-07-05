@@ -42,8 +42,11 @@ namespace TabloidMVC.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, SubscriberUserProfileId, ProviderUserProfileId FROM Subscription
-                        WHERE SubscriberUserProfileId = @subId AND ProviderUserProfileId = @providerId";
+                        SELECT Id, SubscriberUserProfileId, ProviderUserProfileId
+                        FROM Subscription
+                        WHERE SubscriberUserProfileId = @subId
+                        AND ProviderUserProfileId = @providerId
+                        AND EndDateTime IS NULL";
 
                     cmd.Parameters.AddWithValue("@subId", subscriberId);
                     cmd.Parameters.AddWithValue("@providerId", providerId);
@@ -109,8 +112,10 @@ namespace TabloidMVC.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, SubscriberUserProfileId, ProviderUserProfileId, BeginDateTime, EndDateTime FROM Subscription
-                        WHERE SubscriberUserProfileId = @subscriberId";
+                        SELECT Id, SubscriberUserProfileId, ProviderUserProfileId, BeginDateTime, EndDateTime 
+                        FROM Subscription
+                        WHERE SubscriberUserProfileId = @subscriberId
+                        AND EndDateTime IS NULL ";
 
                     cmd.Parameters.AddWithValue("@subscriberId", subscriberId);
                     var reader = cmd.ExecuteReader();
@@ -140,8 +145,31 @@ namespace TabloidMVC.Repositories
                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                 SubscriberUserProfileId = reader.GetInt32(reader.GetOrdinal("SubscriberUserProfileId")),
                 ProviderUserProfileId = reader.GetInt32(reader.GetOrdinal("ProviderUserProfileId")),
-                BeginDateTime = reader.GetDateTime(reader.GetOrdinal("BeginDateTime"))
+                BeginDateTime = reader.GetDateTime(reader.GetOrdinal("BeginDateTime")),
+                EndDateTime = reader.IsDBNull(reader.GetOrdinal("EndDateTime")) ? null : reader.GetDateTime(reader.GetOrdinal("EndDateTime"))
             };
+        }
+
+
+        public void Unsubscribe(Subscription subscription)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Subscription
+                            SET [EndDateTime] = @currentDateTime 
+                            WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@currentDateTime", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@id", subscription.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
 
