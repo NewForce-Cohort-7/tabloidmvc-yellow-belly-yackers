@@ -8,5 +8,6 @@ namespace TabloidMVC.Repositories
         int? AlreadySubbedId(int subscriberId, int providerId);
         Subscription GetById(int id);
         List<Subscription> GetAllSubscribersSubs(int subscriberId);
+        void Unsubscribe(Subscription subscription);
     }
 }

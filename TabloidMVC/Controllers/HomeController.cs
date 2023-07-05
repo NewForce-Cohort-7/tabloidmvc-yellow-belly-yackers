@@ -29,15 +29,17 @@ namespace TabloidMVC.Controllers
                 return View();  
             }
 
-            //otherwise, grab user's id, grab their subscriptions, and get the posts for each subscription
+            //otherwise, grab user's id
             var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            //grab the user's subscriptions and create a list to store the Posts
             var viewModel = new HomeViewModel()
             {
                 Subs = _subRepo.GetAllSubscribersSubs(currentUserId),
                 Posts = new List<Post>()
             };
 
+            //get the posts for each subscription
             foreach (var sub in viewModel.Subs)
             {
                 List<Post> postsToAdd = _postRepo.GetAllPostsByUser(sub.ProviderUserProfileId);
