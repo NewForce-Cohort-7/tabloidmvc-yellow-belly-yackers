@@ -18,47 +18,58 @@
             <th>
                 @Html.DisplayNameFor(model => model.UserTypeId)
             </th>
+            <th>
+
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-
-            @if (item.IsActive)
+            @if (item.UserTypeId == 1)
             {
-                <tr>
-                    <td>
-                        @Html.ActionLink($"{item.FullName}", "Details", new { id=item.Id })
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DisplayName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UserType.Name)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new {}) |
-                        @Html.ActionLink("Deactivate", "Delete", new { id=item.Id })
-                    </td>
-                </tr>
+                @if (item.IsActive)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink($"{item.FullName}", "Details", new { id=item.Id })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DisplayName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserType.Name)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new {}) |
+                            @Html.ActionLink("Deactivate", "Delete", new { id=item.Id })
+                        </td>
+                    </tr>
+                }
             }
             else
             {
-                <tr>
-                    <td>
-                        @Html.ActionLink($"{item.FullName}", "Details", new { id=item.Id })
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DisplayName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UserType.Name)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new {}) |
-                    </td>
-                </tr>
+                @if (item.IsActive)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink($"{item.FullName}", "Details", new { id=item.Id })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DisplayName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserType.Name)
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                }
             }
         }
+        <a asp-action="DeactivatedIndex" class="btn btn-outline-primary mx-1" title="View">
+            Deactivated Users
+        </a>
     </tbody>
 </table>
