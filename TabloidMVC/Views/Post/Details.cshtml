@@ -15,7 +15,7 @@
                 <p class="text-secondary">Written by @Model.Post.UserProfile.DisplayName</p>
                 <p class="text-black-50">Published on @Html.DisplayFor(model => model.Post.PublishDateTime)</p>
             </div>
-            <div class="row">
+            
                 <a asp-action="Edit" asp-route-id="@Model.Post.Id" class="btn btn-outline-primary mx-1" title="Edit">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
@@ -29,7 +29,8 @@
                 <a asp-action="CreateTags" asp-route-id="@Model.Post.Id" class="btn btn-outline-primary mx-1" title="Manage Tags">
                     <i class="fas fa-tag"></i>
                 </a>
-            </div>
+           
+            
                 <a asp-controller="Subscription" asp-action="Create" asp-route-postId="@Model.Post.Id" asp-route-providerId="@Model.Post.UserProfileId" class="btn btn-outline-primary mx-1" title="Subscribe">
                     <i class="fas fa-plus-square"></i>
                 </a>
