@@ -19,7 +19,7 @@ namespace TabloidMVC.Repositories
                     cmd.CommandText = @"
                        SELECT u.id, u.FirstName, u.LastName, u.DisplayName, u.Email,
                               u.CreateDateTime, u.ImageLocation, u.UserTypeId,
-                              ut.[Name] AS UserTypeName
+                              ut.[Name] AS UserTypeName, u.IsActive
                          FROM UserProfile u
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
                         WHERE email = @email";
@@ -40,6 +40,7 @@ namespace TabloidMVC.Repositories
                             CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
                             ImageLocation = DbUtils.GetNullableString(reader, "ImageLocation"),
                             UserTypeId = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
                             UserType = new UserType()
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
@@ -63,7 +64,7 @@ namespace TabloidMVC.Repositories
                 {
                     //List of users is ordered alphabetically by the display name
                     cmd.CommandText = @"
-                        SELECT u.Id, u.DisplayName, u.FirstName, u.LastName, u.Email, u.CreateDateTime, u.ImageLocation, u.UserTypeId, ut.[Name] as UserTypeName
+                        SELECT u.Id, u.DisplayName, u.FirstName, u.LastName, u.Email, u.CreateDateTime, u.ImageLocation, u.UserTypeId, ut.[Name] as UserTypeName, u.IsActive
                         FROM UserProfile u
                         LEFT JOIN UserType ut on ut.Id = u.UserTypeId
                         ORDER BY u.DisplayName ASC
@@ -85,6 +86,7 @@ namespace TabloidMVC.Repositories
                             CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
                             ImageLocation = DbUtils.GetNullableString(reader, "ImageLocation"),
                             UserTypeId = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
+                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
                             UserType = new UserType()
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("UserTypeId")),
@@ -168,6 +170,25 @@ namespace TabloidMVC.Repositories
                     int id = (int)cmd.ExecuteScalar();
 
                     userProfile.Id = id;
+                }
+            }
+        }
+        public void DeactivateUser(UserProfile userProfile)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE UserProfile
+                            SET
+                                [IsActive] = 0
+                            WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@id", userProfile.Id);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
