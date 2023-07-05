@@ -25,10 +25,14 @@
                 <a asp-controller="Comment" asp-action="ForPost" asp-route-postId="@Model.Post.Id" class="btn btn-outline-primary mx-1" title="View Comments">
                     <i class="fas fa-comments"></i>
                 </a>
+
                 <a asp-action="CreateTags" asp-route-id="@Model.Post.Id" class="btn btn-outline-primary mx-1" title="Manage Tags">
                     <i class="fas fa-tag"></i>
                 </a>
             </div>
+                <a asp-controller="Subscription" asp-action="Create" asp-route-postId="@Model.Post.Id" asp-route-providerId="@Model.Post.UserProfileId" class="btn btn-outline-primary mx-1" title="Subscribe">
+                    <i class="fas fa-plus-square"></i>
+                </a>
             <div>
                 <ul style="list-style-type:none; font-size:20px;">
                 @foreach (var tag in Model.Tags)
@@ -37,6 +41,8 @@
                 }
 
                 </ul>
+
+
             </div>
         </section>
         <hr />

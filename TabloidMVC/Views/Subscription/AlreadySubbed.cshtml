@@ -1,0 +1,15 @@
+﻿@model TabloidMVC.Models.Subscription
+
+@{
+    ViewData["Title"] = "AlreadySubbed";
+}
+
+<p>
+<h1>You are already Subscribed to <span style="text-decoration: underline">@Model.Provider.DisplayName</span>!</h1>
+<p/>
+
+<div>
+    <a asp-controller="Post" asp-action="Details" asp-route-id="@Model.PostId">Back to Post</a>
+</div>
+
+
