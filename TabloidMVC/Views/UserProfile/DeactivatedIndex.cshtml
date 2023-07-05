@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<TabloidMVC.Models.UserProfile>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "DeactivatedIndex";
 }
 
 <h1>User Profiles</h1>
@@ -26,7 +26,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            @if (item.IsActive)
+            @if (!item.IsActive)
             {
                 <tr>
                     <td>
@@ -40,13 +40,10 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "Edit", new {}) |
-                        @Html.ActionLink("Deactivate", "Delete", new { id=item.Id })
+                        @Html.ActionLink("Reactivate", "Reactivate", new { id=item.Id })
                     </td>
                 </tr>
             }
         }
-        <a asp-action="DeactivatedIndex" class="btn btn-outline-primary mx-1" title="View">
-            Deactivated Users
-        </a>
     </tbody>
 </table>

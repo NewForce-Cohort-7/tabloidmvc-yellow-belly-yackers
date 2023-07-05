@@ -2,6 +2,8 @@
 using TabloidMVC.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TabloidMVC.Controllers
 {
@@ -111,6 +113,41 @@ namespace TabloidMVC.Controllers
             {
                 return View(userProfile);
             }
+        }
+        public ActionResult Reactivate(int id)
+        {
+            UserProfile userProfile = _userProfileRepo.GetProfileById(id);
+
+            if (userProfile == null)
+            {
+                return NotFound();
+            }
+
+            return View(userProfile);
+        }
+
+        // POST: UserProfileController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reactivate(int id, UserProfile userProfile)
+        {
+            try
+            {
+                _userProfileRepo.ReactivateUser(userProfile);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(userProfile);
+            }
+        }
+        public ActionResult DeactivatedIndex()
+        {  
+ 
+            List<UserProfile> profiles = _userProfileRepo.GetAllUserProfiles();
+
+            return View(profiles);
         }
     }
 }
